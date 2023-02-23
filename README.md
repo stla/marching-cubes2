@@ -7,4 +7,5 @@
 
 
 Haskell and C implementation of the marching cubes algorithm. 
+See [some examples here](https://github.com/stla/isosurfaces2).
 

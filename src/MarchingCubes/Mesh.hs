@@ -38,7 +38,6 @@ import           MarchingCubes.MarchingCubes    ( Voxel
                                                 , marchingCubes
                                                 )
 
--- type Mesh a = ((Vector (a, a, a), [[Int]]), Vector (a, a, a))
 
 data Mesh a = Mesh 
   { 

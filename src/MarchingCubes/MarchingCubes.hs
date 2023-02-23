@@ -13,9 +13,9 @@ import           Foreign.Marshal.Alloc         (free, mallocBytes)
 import           Foreign.Marshal.Array         (peekArray, pokeArray)
 import           Foreign.Ptr                   (Ptr)
 import           Foreign.Storable              (peek, sizeOf)
-import           Data.Matrix                    ( Matrix
-                                                , mapCol
-                                                , fromLists )
+import           Data.Matrix                   ( Matrix
+                                               , mapCol
+                                               , fromLists )
 
 type Bounds a = ((a, a), (a, a), (a, a))
 type Dims = (Int, Int, Int)
@@ -69,12 +69,12 @@ computeContour3d voxel level = do
   let voxmax = voxelMax voxel
       (nx, ny, nz) = snd $ snd voxel 
       voxel' = map realToFrac (fst voxel)
+  nrowsPtr <- mallocBytes (sizeOf (undefined :: CSize))
   putStrLn "Allocating voxel"
   voxelPtr <- mallocBytes (nx*ny*nz * sizeOf (undefined :: CDouble))
-  putStrLn "Poking voxel"
+  putStrLn "Poking voxel..."
   pokeArray voxelPtr voxel'
-  nrowsPtr <- mallocBytes (sizeOf (undefined :: CSize))
-  putStrLn "Run MC"
+  putStrLn "Run C code..."
   result <- c_computeContour3d voxelPtr
             (fromIntegral nx) (fromIntegral ny) (fromIntegral nz)
             (realToFrac voxmax) (realToFrac level) nrowsPtr
