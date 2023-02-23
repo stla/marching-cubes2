@@ -20,7 +20,6 @@ library
   other-modules:       MarchingCubes.MarchingCubes
                      , MarchingCubes.Mesh
   other-extensions:    ForeignFunctionInterface
-                     , BangPatterns
                      , FlexibleContexts
                      , TupleSections
   include-dirs:        C
