@@ -6,16 +6,16 @@ module MarchingCubes.MarchingCubes
   , marchingCubes
   , makeVoxel
   ) where
-import           Control.Monad                 ((=<<), when)
+import           Control.Monad                 (when)
 import           Data.List                     (transpose)
 import           Foreign.C.Types
 import           Foreign.Marshal.Alloc         (free, mallocBytes)
 import           Foreign.Marshal.Array         (peekArray, pokeArray)
 import           Foreign.Ptr                   (Ptr)
 import           Foreign.Storable              (peek, sizeOf)
-import           Data.Matrix                    ( Matrix(ncols)
+import           Data.Matrix                    ( Matrix
                                                 , mapCol
-                                                , fromLists     )
+                                                , fromLists )
 
 type Bounds a = ((a, a), (a, a), (a, a))
 type Dims = (Int, Int, Int)
@@ -85,19 +85,33 @@ computeContour3d voxel level = do
 
 marchingCubes :: Voxel Double -> Double -> Bool -> IO (Matrix Double)
 marchingCubes voxel level summary = do
-  let (bds, dims) = snd voxel
+  let (bds@(xbds, ybds, zbds), dims@(nx, ny, nz)) = snd voxel
   (ppCDouble, nrows) <- computeContour3d voxel level
-  points <- mapM (peekArray 3) =<< peekArray nrows ppCDouble
+  cpoints <- mapM (peekArray 3) =<< peekArray nrows ppCDouble
+  let toDouble :: CDouble -> Double
+      toDouble = realToFrac
+      points = map (map toDouble) cpoints
   when summary $ do
-    let tpoints = transpose (map (map realToFrac) points)
-        xm = minimum (tpoints !! 0)
-        xM = maximum (tpoints !! 0)
-        ym = minimum (tpoints !! 1)
-        yM = maximum (tpoints !! 1)
-        zm = minimum (tpoints !! 2)
-        zM = maximum (tpoints !! 2)
+    let tpoints = transpose points
+        x = tpoints !! 0
+        y = tpoints !! 1
+        z = tpoints !! 2
+        xm = minimum x
+        xM = maximum x
+        ym = minimum y
+        yM = maximum y
+        zm = minimum z
+        zM = maximum z
+        xmin = rescale xbds nx xm
+        xmax = rescale xbds nx xM
+        ymin = rescale ybds ny ym
+        ymax = rescale ybds ny yM
+        zmin = rescale zbds nz zm
+        zmax = rescale zbds nz zM
     putStrLn "Prebounds:"
-    print ((xm,ym,zm),(xM,yM,zM))
-  return $ rescaleMatrix (fromLists (map (map realToFrac) points)) bds dims
+    print ((xm, ym, zm), (xM, yM, zM))
+    putStrLn "Bounds:"
+    print ((xmin, ymin, zmin), (xmax, ymax, zmax))
+  return $ rescaleMatrix (fromLists points) bds dims
 
 
