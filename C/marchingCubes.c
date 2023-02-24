@@ -421,15 +421,15 @@ double** computeContour3d(double* voxelAsVector,
     double** points = GetPoints(cubeco, values, p1rep, x1, x2, totalLength);
     double** triangles = CalPoints(points, totalLength);
 
-    unsigned special = 0;
-    for(size_t i = 0; i < nrow; i++) {
-      unsigned tc = tcase[i];
-      if(tc == 3 || tc == 4 || tc == 6 || tc == 7 || tc == 10 || tc == 12 ||
-         tc == 13) {
-        special = tc;
-        break;
-      }
-    }
+    // unsigned special = 0;
+    // for(size_t i = 0; i < nrow; i++) {
+    //   unsigned tc = tcase[i];
+    //   if(tc == 3 || tc == 4 || tc == 6 || tc == 7 || tc == 10 || tc == 12 ||
+    //      tc == 13) {
+    //     special = tc;
+    //     break;
+    //   }
+    // }
     // if(special){
     //   printf("there are special cases\n");
     // }
@@ -538,8 +538,8 @@ double** computeContour3d(double* voxelAsVector,
             }
             for(size_t i = *ntriangles; i < *ntriangles + totalLength3; i++) {
               triangles[i] = malloc(3 * sizeof(double));
-              for(short j = 0; j < 3; j++) {
-                triangles[i][j] = triangles3[i - *ntriangles][j];
+              for(short jj = 0; jj < 3; jj++) {
+                triangles[i][jj] = triangles3[i - *ntriangles][jj];
               }
               //*(triangles[i]) = *(triangles3[i - *ntriangles]);
             }
